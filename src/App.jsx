@@ -4,6 +4,7 @@ import { useAuthStore } from './store/authStore';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import Solicitudes from './pages/solicitudes/Solicitudes';
+import NuevaSolicitud from './pages/solicitudes/NuevaSolicitud';
 import Layout from './components/layout/Layout';
 
 // Protected Route wrapper
@@ -19,7 +20,7 @@ function ProtectedRoute({ children }) {
 
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
+  
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
@@ -45,6 +46,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Solicitudes />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/solicitudes/nueva"
+          element={
+            <ProtectedRoute>
+              <NuevaSolicitud />
             </ProtectedRoute>
           }
         />
