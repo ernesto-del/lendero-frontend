@@ -1,4 +1,4 @@
-import { useState } from 'react';
+  import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/authService';
@@ -18,7 +18,7 @@ export default function Login() {
 
     try {
       const response = await authService.login(email, password);
-      setAuth(response.data.user, response.data.token);
+      setAuth(response.user, response.token);
       toast.success('¡Bienvenido!');
       navigate('/dashboard');
     } catch (error) {
