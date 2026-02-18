@@ -41,20 +41,21 @@ function App() {
           }
         />
         
-        <Route
-          path="/solicitudes"
-          element={
-            <ProtectedRoute>
-              <Solicitudes />
-            </ProtectedRoute>
-          }
-        />
-
+        {/* IMPORTANTE: Rutas específicas ANTES de las generales */}
         <Route
           path="/solicitudes/nueva"
           element={
             <ProtectedRoute>
               <NuevaSolicitud />
+            </ProtectedRoute>
+          }
+        />
+        
+        <Route
+          path="/solicitudes"
+          element={
+            <ProtectedRoute>
+              <Solicitudes />
             </ProtectedRoute>
           }
         />
