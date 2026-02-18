@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { solicitudesService } from '../../services/solicitudesService';
+import { solicitudService } from '../../services/solicitudService';
 import { Plus, Eye, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -29,9 +29,10 @@ export default function Solicitudes() {
       const params = {};
       if (filtroEstatus) params.estatus = filtroEstatus;
       
-      const response = await solicitudesService.getAll(params);
-      setSolicitudes(response.data.solicitudes);
+      const response = await solicitudService.getAll(params);
+      setSolicitudes(response.data || []);
     } catch (error) {
+      console.error('Error cargando solicitudes:', error);
       toast.error('Error al cargar solicitudes');
     } finally {
       setLoading(false);
@@ -39,7 +40,7 @@ export default function Solicitudes() {
   };
 
   return (
-    <div>
+    <div className="p-6">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Solicitudes</h1>
@@ -47,7 +48,7 @@ export default function Solicitudes() {
         </div>
         <button
           onClick={() => navigate('/solicitudes/nueva')}
-          className="btn-primary flex items-center gap-2"
+          className="flex items-center gap-2 px-6 py-2 bg-lendero-mint text-white rounded-md hover:bg-opacity-90"
         >
           <Plus size={20} />
           Nueva Solicitud
@@ -55,13 +56,13 @@ export default function Solicitudes() {
       </div>
 
       {/* Filtros */}
-      <div className="card mb-6">
+      <div className="bg-white rounded-lg shadow p-4 mb-6">
         <div className="flex items-center gap-4">
           <Filter size={20} className="text-gray-400" />
           <select
             value={filtroEstatus}
             onChange={(e) => setFiltroEstatus(e.target.value)}
-            className="input-field max-w-xs"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-lendero-mint focus:border-transparent max-w-xs"
           >
             <option value="">Todos los estatus</option>
             <option value="PENDIENTE_AUTORIZACION">Pendiente Autorización</option>
@@ -74,14 +75,20 @@ export default function Solicitudes() {
       </div>
 
       {/* Tabla */}
-      <div className="card">
+      <div className="bg-white rounded-lg shadow">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lendero-mint"></div>
           </div>
         ) : solicitudes.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500">No hay solicitudes para mostrar</p>
+            <button
+              onClick={() => navigate('/solicitudes/nueva')}
+              className="mt-4 text-lendero-mint hover:text-opacity-80"
+            >
+              Crear primera solicitud
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -92,7 +99,10 @@ export default function Solicitudes() {
                     Folio
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Despacho
+                    Empresa Emisor
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Cliente
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Monto
@@ -115,10 +125,13 @@ export default function Solicitudes() {
                       {solicitud.folio}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {solicitud.empresa_despacho.razon_social}
+                      {solicitud.empresa_emisor?.razon_social || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {solicitud.cliente_razon_social}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${solicitud.monto_total.toLocaleString('es-MX', {
+                      ${parseFloat(solicitud.monto_total).toLocaleString('es-MX', {
                         minimumFractionDigits: 2,
                       })}
                     </td>
@@ -137,7 +150,7 @@ export default function Solicitudes() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <button
                         onClick={() => navigate(`/solicitudes/${solicitud.id}`)}
-                        className="text-primary hover:text-blue-900 inline-flex items-center gap-1"
+                        className="text-lendero-mint hover:text-opacity-80 inline-flex items-center gap-1"
                       >
                         <Eye size={16} />
                         Ver
